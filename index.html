@@ -11,79 +11,35 @@
 
   <div id="app">
     <div class="container">
+
       <header>
         <h1>Dubai After School Classes</h1>
       </header>
 
-      
-<main>
-  <h2>Available Classes</h2>
+      <main>
+        <h2>Available Classes</h2>
 
-  <div class="lesson-grid">
-    <div class="lesson">
-      <h3>🤖 Robotics</h3>
-      <p>📍 Business Bay</p>
-      <p>AED 250</p>
-    </div>
+        <div class="lesson-grid">
+          <div
+            v-for="lesson in lessons"
+            :key="lesson.id"
+            class="lesson"
+          >
+            <div class="subject-badge">
+              {{ lesson.subject }}
+            </div>
 
-    <div class="lesson">
-      <h3>💻 Coding</h3>
-      <p>📍 Dubai Marina</p>
-      <p>AED 300</p>
-    </div>
+            <h3>{{ lesson.icon }} {{ lesson.subject }}</h3>
+            <p>📍 {{ lesson.location }}</p>
+            <p class="price">AED {{ lesson.price }}</p>
+          </div>
+        </div>
+      </main>
 
-    <div class="lesson">
-      <h3>🧠 Artificial Intelligence</h3>
-      <p>📍 Downtown Dubai</p>
-      <p>AED 350</p>
-    </div>
-
-    <div class="lesson">
-      <h3>📐 Mathematics</h3>
-      <p>📍 Jumeirah</p>
-      <p>AED 200</p>
-    </div>
-
-    <div class="lesson">
-      <h3>🔬 Science</h3>
-      <p>📍 Al Barsha</p>
-      <p>AED 220</p>
-    </div>
-
-    <div class="lesson">
-      <h3>📷 Photography</h3>
-      <p>📍 Palm Jumeirah</p>
-      <p>AED 280</p>
-    </div>
-
-    <div class="lesson">
-      <h3>⚽ Football</h3>
-      <p>📍 Dubai Hills</p>
-      <p>AED 180</p>
-    </div>
-
-    <div class="lesson">
-      <h3>🏀 Basketball</h3>
-      <p>📍 Mirdif</p>
-      <p>AED 190</p>
-    </div>
-
-    <div class="lesson">
-      <h3>🎨 Graphic Design</h3>
-      <p>📍 JLT</p>
-      <p>AED 320</p>
-    </div>
-
-    <div class="lesson">
-      <h3>💼 Business Skills</h3>
-      <p>📍 Dubai Silicon Oasis</p>
-      <p>AED 400</p>
     </div>
   </div>
-</main>
 
-  </div>
-</div>
-
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
