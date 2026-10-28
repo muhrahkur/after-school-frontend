@@ -1,0 +1,28 @@
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #eef4ff;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.container {
+  max-width: 1400px;
+  margin: auto;
+  padding: 30px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+h1 {
+  color: #1e3a8a;
+}
