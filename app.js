@@ -9,6 +9,12 @@ new Vue({
       sortBy: "subject",
       sortOrder: "asc",
       searchTerm: "",
+      orderMessage: "",
+
+      order: {
+        name: "",
+        phone: ""
+      },
 
       // LESSONS INFORMATION
       lessons: [
@@ -146,6 +152,25 @@ new Vue({
         (total, item) => total + item.price,
         0
       );
+    },
+
+    // VALIDATE CUSTOMER NAME
+    validName() {
+      return /^[A-Za-z\s]+$/.test(this.order.name);
+    },
+
+    // VALIDATE UAE MOBILE NUMBER
+    validPhone() {
+      return /^05[0-9]{8}$/.test(this.order.phone);
+    },
+
+    // CHECK IF CHECKOUT IS ALLOWED
+    canCheckout() {
+      return (
+        this.validName &&
+        this.validPhone &&
+        this.cart.length > 0
+      );
     }
   },
 
@@ -166,6 +191,19 @@ new Vue({
         this.cart.splice(index, 1);
         item.spaces++;
       }
+    },
+
+    // SUBMIT THE ORDER
+    submitOrder() {
+      if (!this.canCheckout) return;
+
+      this.orderMessage =
+        "Thank you " + this.order.name +
+        "! Your order has been submitted successfully.";
+
+      this.cart = [];
+      this.order = { name: "", phone: "" };
+      this.showCart = false;
     }
   }
 });

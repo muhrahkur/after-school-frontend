@@ -192,3 +192,39 @@ button:hover {
   padding: 20px;
   border-radius: 12px;
 }
+
+.order-message {
+  background: #dcfce7;
+  color: #166534;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.checkout {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  margin-top: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.checkout input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+.checkout-btn {
+  width: 100%;
+  padding: 12px;
+}
+
+.error {
+  color: #dc2626;
+  font-size: 14px;
+}

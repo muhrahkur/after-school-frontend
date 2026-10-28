@@ -28,10 +28,13 @@
         Cart Items: {{ cart.length }}
       </div>
 
+      <div v-if="orderMessage" class="order-message">
+        {{ orderMessage }}
+      </div>
+
       <!-- LESSONS MAIN PAGE -->
       <div v-if="!showCart">
 
-        <!-- SEARCH AND SORT -->
         <div class="controls">
 
           <input
@@ -163,6 +166,37 @@
 
         <div v-if="cart.length > 0" class="cart-total">
           Total: AED {{ cartTotal }}
+        </div>
+
+        <!-- CHECKOUT FORM -->
+        <div class="checkout">
+
+          <h2>Checkout</h2>
+
+          <input
+            type="text"
+            placeholder="Full Name"
+            v-model.trim="order.name"
+          />
+
+          <input
+            type="tel"
+            placeholder="UAE Phone Number (05XXXXXXXX)"
+            v-model.trim="order.phone"
+          />
+
+          <p v-if="order.phone && !validPhone" class="error">
+            Enter a valid UAE mobile number, e.g. 0501234567.
+          </p>
+
+          <button
+            class="checkout-btn"
+            :disabled="!canCheckout"
+            @click="submitOrder"
+          >
+            Checkout
+          </button>
+
         </div>
 
       </div>
