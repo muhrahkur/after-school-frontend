@@ -4,10 +4,13 @@ new Vue({
 
   data() {
     return {
-      searchTerm: "",
+      showCart: false,
+      cart: [],
       sortBy: "subject",
       sortOrder: "asc",
+      searchTerm: "",
 
+      // LESSONS INFORMATION
       lessons: [
         {
           id: 1,
@@ -114,6 +117,7 @@ new Vue({
   },
 
   computed: {
+    // SEARCH AND SORT LESSONS
     filteredLessons() {
       const term = this.searchTerm.toLowerCase();
 
@@ -134,6 +138,34 @@ new Vue({
           ? comparison
           : comparison * -1;
       });
+    },
+
+    // CALCULATE CART TOTAL
+    cartTotal() {
+      return this.cart.reduce(
+        (total, item) => total + item.price,
+        0
+      );
+    }
+  },
+
+  methods: {
+    // ADD A LESSON TO THE CART
+    addToCart(lesson) {
+      if (lesson.spaces > 0) {
+        this.cart.push(lesson);
+        lesson.spaces--;
+      }
+    },
+
+    // REMOVE A LESSON FROM THE CART
+    removeFromCart(item) {
+      const index = this.cart.indexOf(item);
+
+      if (index > -1) {
+        this.cart.splice(index, 1);
+        item.spaces++;
+      }
     }
   }
 });

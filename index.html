@@ -14,12 +14,26 @@
 
       <header>
         <h1>Dubai After School Classes</h1>
+
+        <button
+          class="cart-button"
+          @click="showCart = !showCart"
+          :disabled="cart.length === 0 && !showCart"
+        >
+          🛒 {{ showCart ? "Back to Classes" : "View Cart" }}
+        </button>
       </header>
 
-      <main>
-        <h2>Available Classes</h2>
+      <div class="cart-summary">
+        Cart Items: {{ cart.length }}
+      </div>
 
+      <!-- LESSONS MAIN PAGE -->
+      <div v-if="!showCart">
+
+        <!-- SEARCH AND SORT -->
         <div class="controls">
+
           <input
             type="text"
             v-model="searchTerm"
@@ -43,14 +57,17 @@
             <option value="asc">Ascending</option>
             <option value="desc">Descending</option>
           </select>
+
         </div>
 
         <div class="lesson-grid">
+
           <div
             v-for="lesson in filteredLessons"
             :key="lesson.id"
             class="lesson"
           >
+
             <img
               :src="lesson.image"
               :alt="lesson.subject"
@@ -76,14 +93,79 @@
             </div>
 
             <p>📍 {{ lesson.location }}</p>
-            <p class="price">AED {{ lesson.price }}</p>
+
+            <p class="price">
+              AED {{ lesson.price }}
+            </p>
 
             <p class="spaces">
               Available Spaces: {{ lesson.spaces }}
             </p>
+
+            <button
+              @click="addToCart(lesson)"
+              :disabled="lesson.spaces === 0"
+            >
+              {{ lesson.spaces === 0 ? "Sold Out" : "Add To Cart" }}
+            </button>
+
           </div>
+
         </div>
-      </main>
+      </div>
+
+      <!-- CART PAGE -->
+      <div v-if="showCart">
+
+        <h2>Your Cart</h2>
+
+        <div v-if="cart.length === 0" class="empty-cart">
+          Your cart is empty.
+        </div>
+
+        <div
+          v-for="(item, index) in cart"
+          :key="index"
+          class="lesson"
+        >
+
+          <img
+            :src="item.image"
+            :alt="item.subject"
+            class="lesson-image cart-image"
+          />
+
+          <h3>{{ item.icon }} {{ item.subject }}</h3>
+
+          <div class="rating">
+            <span
+              v-for="star in 5"
+              :key="star"
+              :class="{ filled: star <= item.rating }"
+            >★</span>
+
+            <span class="rating-number">
+              {{ item.rating }} / 5
+            </span>
+          </div>
+
+          <p>📍 {{ item.location }}</p>
+
+          <p class="price">
+            AED {{ item.price }}
+          </p>
+
+          <button @click="removeFromCart(item)">
+            Remove
+          </button>
+
+        </div>
+
+        <div v-if="cart.length > 0" class="cart-total">
+          Total: AED {{ cartTotal }}
+        </div>
+
+      </div>
 
     </div>
   </div>
