@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,9 +31,10 @@
         {{ orderMessage }}
       </div>
 
-      <!-- LESSONS MAIN PAGE -->
+      <!-- LESSONS MAIN PAGE LAYOUT -->
       <div v-if="!showCart">
 
+        <!-- SEARCH & FILTERING LESSONS -->
         <div class="controls">
 
           <input
@@ -83,6 +83,7 @@
 
             <h3>{{ lesson.icon }} {{ lesson.subject }}</h3>
 
+            <!-- LESSONS CARD LAYOUT ON MAIN PAGE -->
             <div class="rating">
               <span
                 v-for="star in 5"
@@ -115,9 +116,10 @@
           </div>
 
         </div>
+
       </div>
 
-      <!-- CART PAGE -->
+      <!-- CART -->
       <div v-if="showCart">
 
         <h2>Your Cart</h2>
@@ -131,7 +133,6 @@
           :key="index"
           class="lesson"
         >
-
           <img
             :src="item.image"
             :alt="item.subject"
@@ -140,6 +141,7 @@
 
           <h3>{{ item.icon }} {{ item.subject }}</h3>
 
+          <!-- LESSONS CARD LAYOUT ON CART PAGE -->
           <div class="rating">
             <span
               v-for="star in 5"
@@ -168,7 +170,7 @@
           Total: AED {{ cartTotal }}
         </div>
 
-        <!-- CHECKOUT FORM -->
+        <!-- CHECKOUT DETAILS LAYOUT -->
         <div class="checkout">
 
           <h2>Checkout</h2>
@@ -204,6 +206,7 @@
     </div>
   </div>
 
+  <!-- Vue 2.7 (CDN). Swap to vue.min.js for the final submission. -->
   <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
   <script src="app.js"></script>
 </body>

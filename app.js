@@ -1,4 +1,3 @@
-
 new Vue({
   el: "#app",
 
@@ -123,7 +122,7 @@ new Vue({
   },
 
   computed: {
-    // SEARCH AND SORT LESSONS
+    // FILTER USING SEARCH BAR + SORT
     filteredLessons() {
       const term = this.searchTerm.toLowerCase();
 
@@ -140,42 +139,28 @@ new Vue({
         if (a[this.sortBy] > b[this.sortBy]) comparison = 1;
         if (a[this.sortBy] < b[this.sortBy]) comparison = -1;
 
-        return this.sortOrder === "asc"
-          ? comparison
-          : comparison * -1;
+        return this.sortOrder === "asc" ? comparison : comparison * -1;
       });
     },
 
-    // CALCULATE CART TOTAL
     cartTotal() {
-      return this.cart.reduce(
-        (total, item) => total + item.price,
-        0
-      );
+      return this.cart.reduce((total, item) => total + item.price, 0);
     },
 
-    // VALIDATE CUSTOMER NAME
     validName() {
       return /^[A-Za-z\s]+$/.test(this.order.name);
     },
 
-    // VALIDATE UAE MOBILE NUMBER
     validPhone() {
       return /^05[0-9]{8}$/.test(this.order.phone);
     },
 
-    // CHECK IF CHECKOUT IS ALLOWED
     canCheckout() {
-      return (
-        this.validName &&
-        this.validPhone &&
-        this.cart.length > 0
-      );
+      return this.validName && this.validPhone && this.cart.length > 0;
     }
   },
 
   methods: {
-    // ADD A LESSON TO THE CART
     addToCart(lesson) {
       if (lesson.spaces > 0) {
         this.cart.push(lesson);
@@ -183,7 +168,6 @@ new Vue({
       }
     },
 
-    // REMOVE A LESSON FROM THE CART
     removeFromCart(item) {
       const index = this.cart.indexOf(item);
 
@@ -193,17 +177,15 @@ new Vue({
       }
     },
 
-    // SUBMIT THE ORDER
     submitOrder() {
       if (!this.canCheckout) return;
 
       this.orderMessage =
-        "Thank you " + this.order.name +
-        "! Your order has been submitted successfully.";
+        "Thank you " + this.order.name + "! Your order has been submitted successfully.";
 
       this.cart = [];
       this.order = { name: "", phone: "" };
       this.showCart = false;
     }
   }
-});
+}); 
