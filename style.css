@@ -146,3 +146,10 @@ button:hover {
   border-radius: 8px;
   background: white;
 }
+
+.controls select {
+  padding: 9px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: white;
+}

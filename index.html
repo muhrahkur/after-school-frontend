@@ -26,6 +26,23 @@
             placeholder="🔍 Search by subject or location..."
             class="search-box"
           />
+
+          <label>Sort By:</label>
+
+          <select v-model="sortBy">
+            <option value="subject">Subject</option>
+            <option value="location">Location</option>
+            <option value="price">Price</option>
+            <option value="spaces">Spaces</option>
+            <option value="rating">Rating</option>
+          </select>
+
+          <label>Order:</label>
+
+          <select v-model="sortOrder">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
         </div>
 
         <div class="lesson-grid">
@@ -59,7 +76,6 @@
             </div>
 
             <p>📍 {{ lesson.location }}</p>
-
             <p class="price">AED {{ lesson.price }}</p>
 
             <p class="spaces">

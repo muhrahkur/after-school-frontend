@@ -5,6 +5,8 @@ new Vue({
   data() {
     return {
       searchTerm: "",
+      sortBy: "subject",
+      sortOrder: "asc",
 
       lessons: [
         {
@@ -115,11 +117,22 @@ new Vue({
     filteredLessons() {
       const term = this.searchTerm.toLowerCase();
 
-      return this.lessons.filter((lesson) => {
+      const filtered = this.lessons.filter((lesson) => {
         return (
           lesson.subject.toLowerCase().includes(term) ||
           lesson.location.toLowerCase().includes(term)
         );
+      });
+
+      return filtered.sort((a, b) => {
+        let comparison = 0;
+
+        if (a[this.sortBy] > b[this.sortBy]) comparison = 1;
+        if (a[this.sortBy] < b[this.sortBy]) comparison = -1;
+
+        return this.sortOrder === "asc"
+          ? comparison
+          : comparison * -1;
       });
     }
   }
