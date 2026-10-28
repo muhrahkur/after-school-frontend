@@ -4,6 +4,8 @@ new Vue({
 
   data() {
     return {
+      searchTerm: "",
+
       lessons: [
         {
           id: 1,
@@ -107,5 +109,18 @@ new Vue({
         }
       ]
     };
+  },
+
+  computed: {
+    filteredLessons() {
+      const term = this.searchTerm.toLowerCase();
+
+      return this.lessons.filter((lesson) => {
+        return (
+          lesson.subject.toLowerCase().includes(term) ||
+          lesson.location.toLowerCase().includes(term)
+        );
+      });
+    }
   }
 });

@@ -19,9 +19,18 @@
       <main>
         <h2>Available Classes</h2>
 
+        <div class="controls">
+          <input
+            type="text"
+            v-model="searchTerm"
+            placeholder="🔍 Search by subject or location..."
+            class="search-box"
+          />
+        </div>
+
         <div class="lesson-grid">
           <div
-            v-for="lesson in lessons"
+            v-for="lesson in filteredLessons"
             :key="lesson.id"
             class="lesson"
           >
