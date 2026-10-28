@@ -25,13 +25,37 @@
             :key="lesson.id"
             class="lesson"
           >
+            <img
+              :src="lesson.image"
+              :alt="lesson.subject"
+              class="lesson-image"
+            />
+
             <div class="subject-badge">
               {{ lesson.subject }}
             </div>
 
             <h3>{{ lesson.icon }} {{ lesson.subject }}</h3>
+
+            <div class="rating">
+              <span
+                v-for="star in 5"
+                :key="star"
+                :class="{ filled: star <= lesson.rating }"
+              >★</span>
+
+              <span class="rating-number">
+                {{ lesson.rating }} / 5
+              </span>
+            </div>
+
             <p>📍 {{ lesson.location }}</p>
+
             <p class="price">AED {{ lesson.price }}</p>
+
+            <p class="spaces">
+              Available Spaces: {{ lesson.spaces }}
+            </p>
           </div>
         </div>
       </main>

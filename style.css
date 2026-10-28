@@ -90,3 +90,38 @@ button:hover {
     grid-template-columns: 1fr;
   }
 }
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin: 10px 0;
+}
+
+.rating span {
+  color: #d1d5db;
+  font-size: 22px;
+}
+
+.rating span.filled {
+  color: #f59e0b;
+}
+
+.rating .rating-number {
+  color: #4b5563;
+  font-size: 14px;
+  margin-left: 6px;
+}
+
+.spaces {
+  color: #dc2626;
+  font-weight: bold;
+}
+
+.lesson-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
