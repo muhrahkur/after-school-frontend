@@ -15,114 +15,17 @@ new Vue({
         phone: ""
       },
 
-      // LESSONS INFORMATION
-      lessons: [
-        {
-          id: 1,
-          icon: "🤖",
-          subject: "Robotics",
-          image: "images/robotics.jpg",
-          location: "Business Bay",
-          price: 250,
-          spaces: 5,
-          rating: 5
-        },
-        {
-          id: 2,
-          icon: "💻",
-          subject: "Coding",
-          image: "images/coding.jpg",
-          location: "Dubai Marina",
-          price: 300,
-          spaces: 5,
-          rating: 4
-        },
-        {
-          id: 3,
-          icon: "🧠",
-          subject: "Artificial Intelligence",
-          image: "images/ai.jfif",
-          location: "Downtown Dubai",
-          price: 350,
-          spaces: 5,
-          rating: 5
-        },
-        {
-          id: 4,
-          icon: "📐",
-          subject: "Mathematics",
-          image: "images/math.jfif",
-          location: "Jumeirah",
-          price: 200,
-          spaces: 5,
-          rating: 4
-        },
-        {
-          id: 5,
-          icon: "🔬",
-          subject: "Science",
-          image: "images/science.jfif",
-          location: "Al Barsha",
-          price: 220,
-          spaces: 5,
-          rating: 4
-        },
-        {
-          id: 6,
-          icon: "📷",
-          subject: "Photography",
-          image: "images/photography.jpg",
-          location: "Palm Jumeirah",
-          price: 280,
-          spaces: 5,
-          rating: 3
-        },
-        {
-          id: 7,
-          icon: "⚽",
-          subject: "Football",
-          image: "images/football.jfif",
-          location: "Dubai Hills",
-          price: 180,
-          spaces: 5,
-          rating: 5
-        },
-        {
-          id: 8,
-          icon: "🏀",
-          subject: "Basketball",
-          image: "images/basketball.jpg",
-          location: "Mirdif",
-          price: 190,
-          spaces: 5,
-          rating: 3
-        },
-        {
-          id: 9,
-          icon: "🎨",
-          subject: "Graphic Design",
-          image: "images/design.jfif",
-          location: "JLT",
-          price: 320,
-          spaces: 5,
-          rating: 3
-        },
-        {
-          id: 10,
-          icon: "💼",
-          subject: "Business Skills",
-          image: "images/business.jpg",
-          location: "Dubai Silicon Oasis",
-          price: 400,
-          spaces: 5,
-          rating: 4
-        }
-      ]
+      // LESSONS LOADED FROM MONGODB
+      lessons: []
     };
   },
 
+  mounted() {
+    this.fetchLessons();
+  },
+
   computed: {
-    // FILTER USING SEARCH BAR + SORT
+    // FILTER AND SORT LESSONS
     filteredLessons() {
       const term = this.searchTerm.toLowerCase();
 
@@ -139,28 +42,69 @@ new Vue({
         if (a[this.sortBy] > b[this.sortBy]) comparison = 1;
         if (a[this.sortBy] < b[this.sortBy]) comparison = -1;
 
-        return this.sortOrder === "asc" ? comparison : comparison * -1;
+        return this.sortOrder === "asc"
+          ? comparison
+          : comparison * -1;
       });
     },
 
+    // CALCULATE CART TOTAL
     cartTotal() {
-      return this.cart.reduce((total, item) => total + item.price, 0);
+      return this.cart.reduce(
+        (total, item) => total + item.price,
+        0
+      );
     },
 
+    // VALIDATE CUSTOMER NAME
     validName() {
       return /^[A-Za-z\s]+$/.test(this.order.name);
     },
 
+    // VALIDATE CUSTOMER PHONE
     validPhone() {
-      return /^05[0-9]{8}$/.test(this.order.phone);
+      return /^[0-9]+$/.test(this.order.phone);
     },
 
+    // CHECKOUT VALIDATION
     canCheckout() {
-      return this.validName && this.validPhone && this.cart.length > 0;
+      return (
+        this.validName &&
+        this.validPhone &&
+        this.cart.length > 0
+      );
     }
   },
 
   methods: {
+    // GET LESSONS FROM BACKEND
+    fetchLessons() {
+      fetch("http://localhost:3000/lessons")
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Could not load lessons");
+          }
+
+          return response.json();
+        })
+        .then(data => {
+          this.lessons = data.map(lesson => ({
+            id: lesson._id,
+            icon: lesson.icon,
+            subject: lesson.topic,
+            image: "http://localhost:3000/images/" + lesson.image,
+            location: lesson.location,
+            price: lesson.price,
+            spaces: lesson.space,
+            rating: lesson.rating
+          }));
+        })
+        .catch(error => {
+          console.log("Error loading lessons:", error);
+        });
+    },
+
+    // ADD LESSON TO CART
     addToCart(lesson) {
       if (lesson.spaces > 0) {
         this.cart.push(lesson);
@@ -168,6 +112,7 @@ new Vue({
       }
     },
 
+    // REMOVE LESSON FROM CART
     removeFromCart(item) {
       const index = this.cart.indexOf(item);
 
@@ -177,15 +122,98 @@ new Vue({
       }
     },
 
-    submitOrder() {
+    // SUBMIT ORDER TO MONGODB
+    async submitOrder() {
       if (!this.canCheckout) return;
 
-      this.orderMessage =
-        "Thank you " + this.order.name + "! Your order has been submitted successfully.";
+      // COUNT SELECTED SPACES FOR EACH LESSON
+      const lessonCounts = {};
 
-      this.cart = [];
-      this.order = { name: "", phone: "" };
-      this.showCart = false;
+      this.cart.forEach(item => {
+        lessonCounts[item.id] =
+          (lessonCounts[item.id] || 0) + 1;
+      });
+
+      const lessonIDs = Object.keys(lessonCounts);
+
+      const numberOfSpaces = lessonIDs.map(
+        id => lessonCounts[id]
+      );
+
+      try {
+        // POST ORDER
+        const response = await fetch(
+          "http://localhost:3000/orders",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+              name: this.order.name,
+              phone: this.order.phone,
+              lessonIDs: lessonIDs,
+              numberOfSpaces: numberOfSpaces
+            })
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Could not save order");
+        }
+
+        // PUT UPDATED LESSON SPACES
+        const updates = lessonIDs.map(id => {
+          const lesson = this.lessons.find(
+            item => item.id === id
+          );
+
+          return fetch(
+            "http://localhost:3000/lessons/" + id,
+            {
+              method: "PUT",
+
+              headers: {
+                "Content-Type": "application/json"
+              },
+
+              body: JSON.stringify({
+                space: lesson.spaces
+              })
+            }
+          );
+        });
+
+        const results = await Promise.all(updates);
+
+        if (results.some(result => !result.ok)) {
+          throw new Error(
+            "Order saved, but lesson spaces could not all be updated"
+          );
+        }
+
+        // DISPLAY SUCCESS MESSAGE
+        this.orderMessage =
+          "Thank you " + this.order.name +
+          "! Your order has been submitted successfully.";
+
+        // CLEAR CART AND CUSTOMER DETAILS
+        this.cart = [];
+        this.order = {
+          name: "",
+          phone: ""
+        };
+
+        this.showCart = false;
+
+      } catch (error) {
+        console.log("Order error:", error);
+
+        this.orderMessage =
+          "There was a problem submitting your order. Please try again.";
+      }
     }
   }
-}); 
+});
