@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,10 +32,10 @@
         {{ orderMessage }}
       </div>
 
-      <!-- LESSONS MAIN PAGE LAYOUT -->
+      <!-- LESSONS MAIN PAGE -->
       <div v-if="!showCart">
 
-        <!-- SEARCH & FILTERING LESSONS -->
+        <!-- SEARCH, TEACHER AND SORTING -->
         <div class="controls">
 
           <input
@@ -43,6 +44,24 @@
             placeholder="🔍 Search by subject or location..."
             class="search-box"
           />
+
+          <label>Teacher:</label>
+
+          <select
+            v-model="selectedTeacher"
+            @change="fetchTeacherLessons"
+            class="teacher-select"
+          >
+            <option value="">All Teachers</option>
+
+            <option
+              v-for="teacher in teachers"
+              :key="teacher.firstName + teacher.lastName"
+              :value="teacher.firstName + '|' + teacher.lastName"
+            >
+              {{ teacher.firstName }} {{ teacher.lastName }}
+            </option>
+          </select>
 
           <label>Sort By:</label>
 
@@ -63,6 +82,15 @@
 
         </div>
 
+        <h2 v-if="selectedTeacher">
+          Lessons taught by {{ selectedTeacher.replace("|", " ") }}
+        </h2>
+
+        <h2 v-else>
+          Available Lessons
+        </h2>
+
+        <!-- LESSON CARDS -->
         <div class="lesson-grid">
 
           <div
@@ -83,7 +111,6 @@
 
             <h3>{{ lesson.icon }} {{ lesson.subject }}</h3>
 
-            <!-- LESSONS CARD LAYOUT ON MAIN PAGE -->
             <div class="rating">
               <span
                 v-for="star in 5"
@@ -117,6 +144,10 @@
 
         </div>
 
+        <p v-if="filteredLessons.length === 0">
+          No lessons found.
+        </p>
+
       </div>
 
       <!-- CART -->
@@ -128,41 +159,45 @@
           Your cart is empty.
         </div>
 
-        <div
-          v-for="(item, index) in cart"
-          :key="index"
-          class="lesson"
-        >
-          <img
-            :src="item.image"
-            :alt="item.subject"
-            class="lesson-image cart-image"
-          />
+        <div class="lesson-grid">
 
-          <h3>{{ item.icon }} {{ item.subject }}</h3>
+          <div
+            v-for="(item, index) in cart"
+            :key="index"
+            class="lesson"
+          >
 
-          <!-- LESSONS CARD LAYOUT ON CART PAGE -->
-          <div class="rating">
-            <span
-              v-for="star in 5"
-              :key="star"
-              :class="{ filled: star <= item.rating }"
-            >★</span>
+            <img
+              :src="item.image"
+              :alt="item.subject"
+              class="lesson-image"
+            />
 
-            <span class="rating-number">
-              {{ item.rating }} / 5
-            </span>
+            <h3>{{ item.icon }} {{ item.subject }}</h3>
+
+            <div class="rating">
+              <span
+                v-for="star in 5"
+                :key="star"
+                :class="{ filled: star <= item.rating }"
+              >★</span>
+
+              <span class="rating-number">
+                {{ item.rating }} / 5
+              </span>
+            </div>
+
+            <p>📍 {{ item.location }}</p>
+
+            <p class="price">
+              AED {{ item.price }}
+            </p>
+
+            <button @click="removeFromCart(item)">
+              Remove
+            </button>
+
           </div>
-
-          <p>📍 {{ item.location }}</p>
-
-          <p class="price">
-            AED {{ item.price }}
-          </p>
-
-          <button @click="removeFromCart(item)">
-            Remove
-          </button>
 
         </div>
 
@@ -170,7 +205,7 @@
           Total: AED {{ cartTotal }}
         </div>
 
-        <!-- CHECKOUT DETAILS LAYOUT -->
+        <!-- CHECKOUT -->
         <div class="checkout">
 
           <h2>Checkout</h2>
@@ -183,12 +218,12 @@
 
           <input
             type="tel"
-            placeholder="UAE Phone Number (05XXXXXXXX)"
+            placeholder="Phone Number (numbers only)"
             v-model.trim="order.phone"
           />
 
           <p v-if="order.phone && !validPhone" class="error">
-            Enter a valid UAE mobile number, e.g. 0501234567.
+            Phone number must contain numbers only.
           </p>
 
           <button
@@ -206,8 +241,9 @@
     </div>
   </div>
 
-  <!-- Vue 2.7 (CDN). Swap to vue.min.js for the final submission. -->
+  <!-- Vue 2.7 CDN -->
   <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
   <script src="app.js"></script>
+
 </body>
 </html>

@@ -208,9 +208,33 @@ button:disabled {
   margin-bottom: 12px;
 }
 
-.cart-image {
-  height: 120px;
+/* TEACHER FILTER AND SEARCH LAYOUT (CHALLENGE)*/
+.controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
 }
+
+.controls .search-box {
+    flex: 1;
+    min-width: 180px;
+}
+
+.controls .teacher-select {
+    min-width: 150px;
+}
+
+.controls select {
+    padding: 10px;
+}
+
+@media (max-width: 768px) {
+    .controls .search-box {
+        flex-basis: 100%;
+    }
+}
+
 
 @media (max-width: 600px) {
   .container {

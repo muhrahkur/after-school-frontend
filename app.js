@@ -1,3 +1,4 @@
+
 new Vue({
   el: "#app",
 
@@ -16,12 +17,19 @@ new Vue({
       },
 
       // LESSONS LOADED FROM MONGODB
-      lessons: []
+      lessons: [],
+
+      // TEACHER INFORMATION
+      teachers: [],
+      selectedTeacher: "",
+      teacherLessons: []
     };
   },
 
   mounted() {
-    this.fetchLessons();
+    this.fetchLessons().then(() => {
+      this.fetchTeachers();
+    });
   },
 
   computed: {
@@ -29,7 +37,11 @@ new Vue({
     filteredLessons() {
       const term = this.searchTerm.toLowerCase();
 
-      const filtered = this.lessons.filter((lesson) => {
+      let lessonsToShow = this.selectedTeacher
+        ? this.teacherLessons
+        : this.lessons;
+
+      const filtered = lessonsToShow.filter((lesson) => {
         return (
           lesson.subject.toLowerCase().includes(term) ||
           lesson.location.toLowerCase().includes(term)
@@ -77,9 +89,25 @@ new Vue({
   },
 
   methods: {
+    // CONVERT MONGODB LESSON INTO FRONTEND LESSON
+    formatLesson(lesson) {
+      return {
+        id: lesson._id,
+        icon: lesson.icon,
+        subject: lesson.topic,
+        image: "http://localhost:3000/images/" + lesson.image,
+        location: lesson.location,
+        price: lesson.price,
+        spaces: lesson.space,
+        rating: lesson.rating,
+        teacherFirstname: lesson.teacherFirstname,
+        teacherLastname: lesson.teacherLastname
+      };
+    },
+
     // GET LESSONS FROM BACKEND
     fetchLessons() {
-      fetch("http://localhost:3000/lessons")
+      return fetch("http://localhost:3000/lessons")
         .then(response => {
           if (!response.ok) {
             throw new Error("Could not load lessons");
@@ -88,27 +116,78 @@ new Vue({
           return response.json();
         })
         .then(data => {
-          this.lessons = data.map(lesson => ({
-            id: lesson._id,
-            icon: lesson.icon,
-            subject: lesson.topic,
-            image: "http://localhost:3000/images/" + lesson.image,
-            location: lesson.location,
-            price: lesson.price,
-            spaces: lesson.space,
-            rating: lesson.rating
-          }));
+          this.lessons = data.map(lesson =>
+            this.formatLesson(lesson)
+          );
         })
         .catch(error => {
           console.log("Error loading lessons:", error);
         });
     },
 
+    // GET ALL TEACHERS FROM BACKEND
+    fetchTeachers() {
+      fetch("http://localhost:3000/teachers")
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Could not load teachers");
+          }
+
+          return response.json();
+        })
+        .then(data => {
+          this.teachers = data;
+        })
+        .catch(error => {
+          console.log("Error loading teachers:", error);
+        });
+    },
+
+    // GET LESSONS FOR SELECTED TEACHER
+    fetchTeacherLessons() {
+      if (!this.selectedTeacher) {
+        this.teacherLessons = [];
+        return;
+      }
+
+      const teacher = this.selectedTeacher.split("|");
+
+      fetch(
+        "http://localhost:3000/teachers/" +
+        encodeURIComponent(teacher[0]) + "/" +
+        encodeURIComponent(teacher[1])
+      )
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Could not load teacher lessons");
+          }
+
+          return response.json();
+        })
+        .then(data => {
+          this.teacherLessons = data.map(lesson => {
+            const existingLesson = this.lessons.find(
+              item => item.id === lesson._id
+            );
+
+            return existingLesson || this.formatLesson(lesson);
+          });
+        })
+        .catch(error => {
+          console.log("Error loading teacher lessons:", error);
+          this.teacherLessons = [];
+        });
+    },
+
     // ADD LESSON TO CART
     addToCart(lesson) {
-      if (lesson.spaces > 0) {
-        this.cart.push(lesson);
-        lesson.spaces--;
+      const selectedLesson = this.lessons.find(
+        item => item.id === lesson.id
+      );
+
+      if (selectedLesson && selectedLesson.spaces > 0) {
+        this.cart.push(selectedLesson);
+        selectedLesson.spaces--;
       }
     },
 
@@ -201,6 +280,7 @@ new Vue({
 
         // CLEAR CART AND CUSTOMER DETAILS
         this.cart = [];
+
         this.order = {
           name: "",
           phone: ""
